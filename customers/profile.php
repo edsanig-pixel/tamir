@@ -1,8 +1,12 @@
 <?php
-require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/../config.php';
 require_login($pdo);
 
-$customerId = $_GET['id'] ?? 0;
+$customerId = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+if (!$customerId || $customerId < 1) {
+    header("Location: customers.php");
+    exit;
+}
 $stmt = $pdo->prepare("SELECT * FROM customers WHERE id = ?");
 $stmt->execute([$customerId]);
 $customer = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -51,100 +55,12 @@ $historyStmt->bindValue(3, $offset, PDO::PARAM_INT);
 $historyStmt->execute();
 $repairs = $historyStmt->fetchAll(PDO::FETCH_ASSOC);
 
-require_once __DIR__ . '/header.php';
+require_once __DIR__ . '/../header.php';
 ?>
-
-<style>
-    .page-title {
-        font-size: 28px; font-weight: 800; color: #1e3a8a; margin-bottom: 20px;
-        display: flex; align-items: center; gap: 15px;
-    }
-    .profile-card {
-        background: #fff; border-radius: 22px; padding: 25px;
-        box-shadow: 0 3px 18px rgba(0,0,0,0.05); border: 1px solid #e5e7eb;
-        margin-bottom: 25px;
-    }
-    .profile-header {
-        display: flex; flex-wrap: wrap; gap: 20px; align-items: center;
-    }
-    .customer-avatar {
-        width: 80px; height: 80px; border-radius: 50%; background: #1e3a8a;
-        color: #fff; display: flex; align-items: center; justify-content: center;
-        font-size: 40px; font-weight: bold; flex-shrink: 0;
-    }
-    .customer-details {
-        flex: 1;
-    }
-    .customer-details h3 {
-        margin: 0 0 5px 0; color: #1e3a8a; font-size: 24px;
-    }
-    .customer-details .info-row {
-        display: flex; flex-wrap: wrap; gap: 20px; margin: 8px 0;
-    }
-    .customer-details .info-item {
-        display: flex; align-items: center; gap: 6px; color: #475569;
-    }
-    .badge-type {
-        display: inline-block; padding: 4px 14px; border-radius: 20px;
-        font-size: 12px; font-weight: 700; margin-right: 10px;
-    }
-    .badge-personal { background: #dbeafe; color: #1e40af; }
-    .badge-company { background: #fef3c7; color: #92400e; }
-    .stats-row {
-        display: flex; flex-wrap: wrap; gap: 15px; margin-top: 20px;
-    }
-    .stat-item {
-        background: #f8fafc; border-radius: 14px; padding: 15px 20px;
-        text-align: center; flex: 1; min-width: 120px;
-        border: 1px solid #e2e8f0;
-    }
-    .stat-item .stat-number { font-size: 24px; font-weight: 800; color: #1e3a8a; }
-    .stat-item .stat-label { font-size: 13px; color: #64748b; margin-top: 4px; }
-    .service-card {
-        background: #fff; border-radius: 18px; padding: 20px;
-        box-shadow: 0 2px 12px rgba(0,0,0,0.04); border: 1px solid #e5e7eb;
-        margin-bottom: 15px;
-    }
-    .service-card .header {
-        display: flex; justify-content: space-between; align-items: center;
-        margin-bottom: 15px;
-    }
-    .service-card .invoice { font-weight: 800; color: #1e3a8a; font-size: 18px; }
-    .service-card .date { color: #6b7280; font-size: 13px; }
-    .service-card .details {
-        display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
-    }
-    .service-card .amount {
-        font-weight: 700; margin-top: 10px; text-align: left;
-    }
-    .badge-status {
-        padding: 6px 14px; border-radius: 30px; font-size: 12px; font-weight: 700;
-    }
-    .badge-paid { background: #dcfce7; color: #166534; }
-    .badge-unpaid { background: #fee2e2; color: #991b1b; }
-    .badge-partial { background: #fef3c7; color: #92400e; }
-    .actions-bar {
-        display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;
-    }
-    .btn {
-        display: inline-flex; align-items: center; gap: 6px;
-        padding: 10px 22px; border-radius: 40px; font-weight: 700;
-        text-decoration: none; transition: 0.2s; cursor: pointer; border: none;
-        font-family: inherit; font-size: 14px;
-    }
-    .btn-primary { background: #1e3c72; color: #fff; }
-    .btn-primary:hover { background: #172d56; }
-    .btn-outline {
-        background: #fff; color: #1e3c72; border: 2px solid #1e3c72;
-    }
-    .btn-outline:hover { background: #f0f2f5; }
-    .btn-danger { background: #dc2626; color: #fff; }
-    .btn-danger:hover { background: #b91c1c; }
-</style>
 
 <h2 class="page-title">
     👤 پرونده مشتری
-    <a href="customers.php" class="btn btn-outline" style="font-size:14px;">← بازگشت به لیست مشتریان</a>
+    <a href="<?= BASE_URL ?>/customers" class="btn btn-outline" style="font-size:14px;">← بازگشت به لیست مشتریان</a>
 </h2>
 
 <!-- کارت اطلاعات مشتری -->
@@ -360,7 +276,6 @@ $transactions = $transStmt->fetchAll();
         </form>
     </div>
 </div>
-<script src="script.js"></script>
 </main>
 </body>
 </html>

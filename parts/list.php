@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/../config.php';
 require_login($pdo);
 
 $message = '';
@@ -72,7 +72,7 @@ $parts = $pdo->prepare($sql);
 $parts->execute($params);
 $parts = $parts->fetchAll();
 
-require_once __DIR__ . '/header.php';
+require_once __DIR__ . '/../header.php';
 ?>
 
 <h2>⚙️ مدیریت قطعات و انبار</h2>
@@ -93,7 +93,7 @@ require_once __DIR__ . '/header.php';
             <input type="text" name="default_sale_price" placeholder="قیمت فروش (ریال)" oninput="formatInput(this)" value="<?= $editPart ? number_format($editPart['default_sale_price']) : '' ?>" style="flex:1;">
             <button type="submit" class="btn primary"><?= $editPart ? '💾 به‌روزرسانی' : '➕ ثبت قطعه' ?></button>
             <?php if ($editPart): ?>
-                <a href="parts.php" class="btn secondary">انصراف</a>
+                <a href="<?= BASE_URL ?>/parts" class="btn secondary">انصراف</a>
             <?php endif; ?>
         </div>
     </form>
@@ -102,7 +102,7 @@ require_once __DIR__ . '/header.php';
     <form method="GET" class="search-box">
         <input type="text" name="search" placeholder="🔍 جستجوی قطعه..." value="<?= htmlspecialchars($search) ?>">
         <button type="submit" class="btn">جستجو</button>
-        <?php if ($search): ?><a href="parts.php" style="color:#e74c3c;">✖ حذف</a><?php endif; ?>
+        <?php if ($search): ?><a href="<?= BASE_URL ?>/parts" style="color:#e74c3c;">✖ حذف</a><?php endif; ?>
     </form>
 
     <!-- جدول قطعات -->

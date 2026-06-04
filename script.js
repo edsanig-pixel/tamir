@@ -158,7 +158,7 @@ function updatePartsTotal() {
 // ========== دریافت اطلاعات قطعه ==========
 function fetchPartInfo(partId, priceInput, purchaseInput) {
     if(!partId) return;
-    fetch('ajax_handler.php',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'action=get_part_info&part_id='+encodeURIComponent(partId)})
+    fetch(`${APP_BASE_URL}/ajax_handler.php`,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'action=get_part_info&part_id='+encodeURIComponent(partId)})
     .then(r=>r.json()).then(data=>{
         if(data.success){
             if(data.default_sale_price && priceInput){ priceInput.value=Number(data.default_sale_price).toLocaleString('en-US'); updatePartsTotal(); }
@@ -201,7 +201,7 @@ document.addEventListener('click',function(e){
             if(!n){alert('نام نمی‌تواند خالی باشد.');return;}
             payload.append('name',n);
         }
-        fetch('ajax_handler.php',{method:'POST',body:payload}).then(r=>r.json()).then(data=>{
+        fetch(`${APP_BASE_URL}/ajax_handler.php`,{method:'POST',body:payload}).then(r=>r.json()).then(data=>{
             if(data.success){
                 const selMap={customer:'customer_select',device_type:'device_type_select',service_type:'service_type_select',technician:'technician_select',part:'part_select'};
                 const selId=selMap[currentAddType];
@@ -223,7 +223,7 @@ function submitAll(){
     if(!serviceData.fault_description){alert('شرح مشکل الزامی است.');return;}
     const fd=new FormData();
     for(let[k,v]of Object.entries(serviceData)) fd.append(k,k==='parts'?JSON.stringify(v):(v??''));
-    fetch('save_service.php',{method:'POST',body:fd}).then(r=>r.json()).then(data=>{
+    fetch(`${APP_BASE_URL}/save_service.php`,{method:'POST',body:fd}).then(r=>r.json()).then(data=>{
         if(data.success){alert('✅ سرویس با موفقیت ثبت شد. شماره فاکتور: '+data.invoice_number);window.location.href='index.php';}
         else alert('❌ '+data.message);
     }).catch(()=>alert('خطا در اتصال به سرور.'));
@@ -268,7 +268,7 @@ document.addEventListener('DOMContentLoaded',function(){
             payload.append('address',document.getElementById('custAddress')?.value||'');
             payload.append('email',document.getElementById('custEmail')?.value||'');
             payload.append('notes',document.getElementById('custNotes')?.value||'');
-            fetch('ajax_handler.php',{method:'POST',body:payload}).then(r=>r.json()).then(data=>{
+            fetch(`${APP_BASE_URL}/ajax_handler.php`,{method:'POST',body:payload}).then(r=>r.json()).then(data=>{
                 if(data.success) location.reload(); else alert(data.message);
             }).catch(()=>alert('خطا'));
         });
@@ -284,7 +284,7 @@ document.addEventListener('DOMContentLoaded',function(){
             payload.append('action',action); if(id) payload.append('id',id);
             payload.append('name',document.getElementById('supName')?.value||'');
             payload.append('phone',document.getElementById('supPhone')?.value||'');
-            fetch('ajax_handler.php',{method:'POST',body:payload}).then(r=>r.json()).then(data=>{
+            fetch(`${APP_BASE_URL}/ajax_handler.php`,{method:'POST',body:payload}).then(r=>r.json()).then(data=>{
                 if(data.success) location.reload(); else alert(data.message);
             });
         });
@@ -310,7 +310,7 @@ document.addEventListener('DOMContentLoaded',function(){
             payload.append('invoice',document.getElementById('purchaseInvoice')?.value||'');
             payload.append('notes',document.getElementById('purchaseNotes')?.value||'');
             payload.append('items',JSON.stringify(items));
-            fetch('ajax_handler.php',{method:'POST',body:payload}).then(r=>r.json()).then(data=>{
+            fetch(`${APP_BASE_URL}/ajax_handler.php`,{method:'POST',body:payload}).then(r=>r.json()).then(data=>{
                 if(data.success){alert('خرید با موفقیت ثبت شد.');location.reload();}
                 else alert(data.message);
             });
@@ -328,7 +328,7 @@ document.addEventListener('DOMContentLoaded',function(){
             payload.append('date',document.getElementById('transDateHidden')?.value||'');
             payload.append('repair_id',document.getElementById('transRepair')?.value||'');
             payload.append('desc',document.getElementById('transDesc')?.value||'');
-            fetch('ajax_handler.php',{method:'POST',body:payload}).then(r=>r.json()).then(data=>{
+            fetch(`${APP_BASE_URL}/ajax_handler.php`,{method:'POST',body:payload}).then(r=>r.json()).then(data=>{
                 if(data.success){alert('پرداخت ثبت شد.');location.reload();}
                 else alert(data.message);
             });
@@ -424,3 +424,158 @@ function initDatePickers(){
         document.addEventListener('click',function(e){ if(!picker.contains(e.target)&&e.target!==input) picker.style.display='none'; });
     });
 }
+
+// ================= منوی کاربری و مودال‌ها =================
+function closeDropdownsOnClickOutside(event) {
+    const userMenu = document.getElementById('userDropdown');
+    if (userMenu && !event.target.closest('.user-menu')) {
+        userMenu.classList.remove('show');
+    }
+}
+
+document.addEventListener('click', closeDropdownsOnClickOutside);
+
+function moneyFormat(num) {
+    return new Intl.NumberFormat('fa-IR').format(num || 0) + ' ریال';
+}
+
+function openDetailsModal(data, partsTotal, grandTotal) {
+    const modal = document.getElementById('detailsModal');
+    if (!modal) return;
+    document.getElementById('modalInvoice').innerText = 'فاکتور ' + (data.invoice_number || '-');
+
+    let statusClass = 'status-unpaid';
+    let statusText = 'پرداخت نشده';
+    if (data.payment_status === 'paid') {
+        statusClass = 'status-paid';
+        statusText = 'پرداخت شده';
+    }
+    if (data.payment_status === 'partial') {
+        statusClass = 'status-partial';
+        statusText = 'پرداخت ناقص';
+    }
+
+    const modalStatus = document.getElementById('modalStatus');
+    if (modalStatus) {
+        modalStatus.innerHTML = `<div class="details-status ${statusClass}">${statusText}</div>`;
+    }
+
+    const fillText = (id, value) => {
+        const el = document.getElementById(id);
+        if (el) el.innerText = value || '-';
+    };
+
+    fillText('modalCustomer', data.customer_name);
+    fillText('modalPhone', data.customer_phone);
+    fillText('modalService', data.service_type);
+    fillText('modalBrand', data.device_brand);
+    fillText('modalModel', data.device_model);
+    fillText('modalSerial', data.device_serial);
+    fillText('modalLocation', data.device_location);
+    fillText('modalDate', data.service_date);
+    fillText('modalWarranty', (data.warranty_months || 0) + ' ماه');
+    fillText('modalFault', data.fault_description);
+    fillText('modalSolution', data.solution_description);
+    fillText('modalNotes', data.technician_notes);
+
+    const modalLabor = document.getElementById('modalLabor');
+    if (modalLabor) modalLabor.innerText = moneyFormat(data.labor_cost || 0);
+    const modalExtra = document.getElementById('modalExtra');
+    if (modalExtra) modalExtra.innerText = moneyFormat(data.extra_costs || 0);
+    const modalParts = document.getElementById('modalParts');
+    if (modalParts) modalParts.innerText = moneyFormat(partsTotal || 0);
+    const modalGrand = document.getElementById('modalGrand');
+    if (modalGrand) modalGrand.innerText = 'جمع کل: ' + moneyFormat(grandTotal || 0);
+
+    modal.classList.add('active');
+}
+
+function closeDetailsModal() {
+    const modal = document.getElementById('detailsModal');
+    if (modal) modal.classList.remove('active');
+}
+
+function closeRestoreModal() {
+    const modal = document.getElementById('restoreModal');
+    if (modal) modal.classList.remove('active');
+}
+
+function previewRestore(logId) {
+    const modal = document.getElementById('restoreModal');
+    const details = document.getElementById('restoreDetails');
+    if (!modal || !details) return;
+    modal.classList.add('active');
+    details.innerHTML = 'در حال بارگذاری...';
+
+    fetch(`${APP_BASE_URL}/ajax_handler.php`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'action=get_log_data&log_id=' + encodeURIComponent(logId)
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (!data.success) {
+            details.innerHTML = '<p style="color:red;">خطا: ' + (data.message || 'اطلاعات قبلی یافت نشد.') + '</p>';
+            return;
+        }
+        const repair = data.repair;
+        if (!repair) {
+            details.innerHTML = '<p style="color:red;">اطلاعات قبلی یافت نشد.</p>';
+            return;
+        }
+        let html = '<table style="width:100%; font-size:14px;">';
+        html += `<tr><td>🔢 فاکتور</td><td>${repair.invoice_number || '—'}</td></tr>`;
+        html += `<tr><td>👤 مشتری</td><td>${repair.customer_name || repair.customer_id || '—'}</td></tr>`;
+        html += `<tr><td>📱 مدل</td><td>${repair.device_brand || '—'} ${repair.device_model || ''}</td></tr>`;
+        html += `<tr><td>🔢 سریال</td><td>${repair.device_serial || '—'}</td></tr>`;
+        html += `<tr><td>📅 تاریخ سرویس</td><td>${repair.service_date_jalali || repair.service_date || '—'}</td></tr>`;
+        html += `<tr><td>💰 مزد دست</td><td>${Number(repair.labor_cost).toLocaleString()} ریال</td></tr>`;
+        html += `<tr><td>⚙️ هزینه جانبی</td><td>${Number(repair.extra_costs).toLocaleString()} ریال</td></tr>`;
+        html += `<tr><td>📝 شرح مشکل</td><td>${repair.fault_description || '—'}</td></tr>`;
+        html += '</table>';
+        details.innerHTML = html;
+        window.currentRestoreLogId = logId;
+    })
+    .catch(() => {
+        details.innerHTML = '<p style="color:red;">خطا در ارتباط با سرور</p>';
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    if (window.initialData && Array.isArray(window.initialData.existingParts)) {
+        window.initialData.existingParts.forEach(p => addPartRow(p.part_id, p.quantity, p.unit_price, p.purchase_price));
+    }
+
+    const confirmRestoreBtn = document.getElementById('confirmRestoreBtn');
+    if (confirmRestoreBtn) {
+        confirmRestoreBtn.addEventListener('click', function() {
+            const logId = window.currentRestoreLogId;
+            if (!logId) return;
+            if (!confirm('آیا از بازگردانی این سرویس به حالت قبل مطمئن هستید؟')) return;
+            fetch(`${APP_BASE_URL}/ajax_handler.php`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'action=restore_repair&log_id=' + encodeURIComponent(logId)
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    alert('✅ ' + data.message);
+                    location.reload();
+                } else {
+                    alert('❌ ' + (data.message || 'خطا در بازگردانی'));
+                }
+            });
+        });
+    }
+});
+
+window.addEventListener('click', function(event) {
+    const target = event.target;
+    ['detailsModal', 'restoreModal'].forEach(id => {
+        const modal = document.getElementById(id);
+        if (modal && target === modal) {
+            modal.classList.remove('active');
+        }
+    });
+});

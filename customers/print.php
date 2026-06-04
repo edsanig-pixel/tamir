@@ -1,8 +1,11 @@
 <?php
-require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/../config.php';
 require_login($pdo);
 
-$customerId = $_GET['id'] ?? 0;
+$customerId = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+if (!$customerId || $customerId < 1) {
+    die('شناسه مشتری نامعتبر است.');
+}
 $stmt = $pdo->prepare("SELECT * FROM customers WHERE id = ?");
 $stmt->execute([$customerId]);
 $customer = $stmt->fetch(PDO::FETCH_ASSOC);

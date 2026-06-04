@@ -1,9 +1,9 @@
 <?php
-require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/../config.php';
 require_login($pdo);
 
-$id = $_GET['id'] ?? 0;
-if (!$id) {
+$id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+if (!$id || $id < 1) {
     header("Location: index.php");
     exit;
 }

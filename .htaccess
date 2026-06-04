@@ -1,0 +1,27 @@
+RewriteEngine On
+RewriteBase /tamir
+
+# Redirect old URLs to new structure (optional - for backwards compatibility)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Repair pages
+RewriteRule ^create/?$ repairs/create.php [L]
+RewriteRule ^edit/?$ repairs/edit.php [L]
+RewriteRule ^delete/?$ repairs/delete.php [L]
+RewriteRule ^invoice/?$ repairs/invoice.php [L]
+
+# Customer pages
+RewriteRule ^customers/?$ customers/list.php [L]
+RewriteRule ^customer_profile/?$ customers/profile.php [L]
+RewriteRule ^customer_print/?$ customers/print.php [L]
+
+# Other pages
+RewriteRule ^parts/?$ parts/list.php [L]
+RewriteRule ^suppliers/?$ suppliers/list.php [L]
+RewriteRule ^purchases/?$ purchases/list.php [L]
+RewriteRule ^users/?$ users/list.php [L]
+RewriteRule ^profile/?$ profile/index.php [L]
+RewriteRule ^logs/?$ logs/index.php [L]
+RewriteRule ^financial_report/?$ financial/reports.php [L]
+RewriteRule ^reports/?$ financial/index.php [L]

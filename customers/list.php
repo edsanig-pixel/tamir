@@ -1,12 +1,13 @@
 <?php
-require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/../config.php';
 require_login($pdo);
 
 // حذف مشتری
-if (isset($_GET['delete_id']) && is_numeric($_GET['delete_id'])) {
+$deleteId = filter_input(INPUT_GET, 'delete_id', FILTER_VALIDATE_INT);
+if ($deleteId && $deleteId > 0) {
     $stmt = $pdo->prepare("DELETE FROM customers WHERE id = ?");
-    $stmt->execute([$_GET['delete_id']]);
-    log_activity($pdo, $_SESSION['user_id'], 'delete', 'customer', $_GET['delete_id'], 'حذف مشتری');
+    $stmt->execute([$deleteId]);
+    log_activity($pdo, $_SESSION['user_id'], 'delete', 'customer', $deleteId, 'حذف مشتری');
     header("Location: customers.php?msg=deleted");
     exit;
 }
@@ -34,68 +35,8 @@ $stmt = $pdo->prepare("
 $stmt->execute($params);
 $customers = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-require_once __DIR__ . '/header.php';
+require_once __DIR__ . '/../header.php';
 ?>
-
-<style>
-    .page-header {
-        display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;
-    }
-    .page-title { font-size: 28px; font-weight: 800; color: #1e3a8a; }
-    .search-card {
-        background: #fff; border-radius: 22px; padding: 25px;
-        box-shadow: 0 3px 18px rgba(0,0,0,0.05); border: 1px solid #e5e7eb;
-        margin-bottom: 25px;
-    }
-    .search-box {
-        display: flex; gap: 10px; margin-bottom: 20px;
-    }
-    .search-box input {
-        flex: 1; padding: 12px 16px; border: 1px solid #ccd4dd; border-radius: 12px;
-        font-family: inherit;
-    }
-    .customer-grid {
-        display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-        gap: 20px;
-    }
-    .customer-card {
-        background: #fff; border-radius: 18px; padding: 22px;
-        box-shadow: 0 2px 12px rgba(0,0,0,0.04); border: 1px solid #e5e7eb;
-        transition: 0.2s; position: relative;
-    }
-    .customer-card:hover {
-        transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-    }
-    .customer-card h3 {
-        margin: 0 0 8px 0; color: #1e3a8a; font-size: 20px;
-    }
-    .customer-card .info-row {
-        margin: 6px 0; color: #475569; display: flex; align-items: center; gap: 6px;
-    }
-    .customer-card .stats-row {
-        display: flex; gap: 15px; margin-top: 15px; border-top: 1px solid #eee; padding-top: 12px;
-    }
-    .customer-card .stat {
-        text-align: center; flex: 1;
-    }
-    .customer-card .stat-number { font-weight: 800; color: #1e3a8a; font-size: 18px; }
-    .customer-card .stat-label { font-size: 12px; color: #64748b; }
-    .card-actions {
-        position: absolute; top: 15px; left: 15px; display: flex; gap: 6px;
-    }
-    .card-actions button {
-        background: #f1f5f9; border: none; border-radius: 8px; padding: 6px 12px;
-        cursor: pointer; font-family: inherit; transition: 0.2s;
-    }
-    .card-actions button:hover { background: #e2e8f0; }
-    .no-result { text-align: center; padding: 40px; color: #64748b; }
-    .badge-type {
-        display: inline-block; padding: 4px 12px; border-radius: 20px;
-        font-size: 12px; font-weight: 700; margin-right: 8px;
-    }
-    .badge-personal { background: #dbeafe; color: #1e40af; }
-    .badge-company { background: #fef3c7; color: #92400e; }
-</style>
 
 <div class="page-header">
     <h2 class="page-title">👥 مدیریت مشتریان</h2>
@@ -106,7 +47,7 @@ require_once __DIR__ . '/header.php';
     <form method="GET" class="search-box">
         <input type="text" name="search" placeholder="🔍 جستجوی مشتری (نام، تلفن یا شرکت)..." value="<?= htmlspecialchars($search) ?>">
         <button type="submit" class="btn btn-primary">جستجو</button>
-        <?php if ($search): ?><a href="customers.php" class="btn secondary">حذف فیلتر</a><?php endif; ?>
+        <?php if ($search): ?><a href="<?= BASE_URL ?>/customers" class="btn secondary">حذف فیلتر</a><?php endif; ?>
     </form>
 
     <?php if (count($customers) > 0): ?>
@@ -132,7 +73,7 @@ require_once __DIR__ . '/header.php';
                         <div class="info-row">🏢 <?= htmlspecialchars($cust['company_name']) ?></div>
                     <?php endif; ?>
                     <div class="info-row">
-                        <a href="customer_profile.php?id=<?= $cust['id'] ?>" style="color:#1e3a8a; font-weight:700;">📋 پرونده کامل</a>
+                        <a href="customer_profile.php?id=<?= $cust['id'] ?>" class="card-link">📋 پرونده کامل</a>
                     </div>
                     <div class="stats-row">
                         <div class="stat">
@@ -191,8 +132,6 @@ require_once __DIR__ . '/header.php';
         </form>
     </div>
 </div>
-
-<script src="script.js"></script>
 </main>
 </body>
 </html>

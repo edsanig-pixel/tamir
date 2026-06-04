@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/../config.php';
 require_login($pdo);
 
 if (!in_array($_SESSION['user_role'] ?? '', ['admin', 'super_admin'])) {
@@ -81,7 +81,7 @@ function formatDescription($description, $entityType, $action) {
     return mb_strlen($description) > 80 ? mb_substr($description, 0, 80) . '...' : $description;
 }
 
-require_once __DIR__ . '/header.php';
+require_once __DIR__ . '/../header.php';
 ?>
 
 <style>
@@ -147,7 +147,7 @@ require_once __DIR__ . '/header.php';
         </select>
         <input type="text" name="search" placeholder="🔍 جستجو در توضیحات..." value="<?= htmlspecialchars($search) ?>">
         <button type="submit" class="btn primary">اعمال فیلتر</button>
-        <a href="logs.php" class="btn secondary">حذف فیلتر</a>
+        <a href="<?= BASE_URL ?>/logs" class="btn secondary">حذف فیلتر</a>
     </form>
 
     <table class="log-table">
@@ -252,7 +252,7 @@ function previewRestore(logId) {
     document.getElementById('restoreModal').classList.add('active');
     document.getElementById('restoreDetails').innerHTML = 'در حال بارگذاری...';
 
-    fetch('ajax_handler.php', {
+    fetch(`${APP_BASE_URL}/ajax_handler.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: 'action=get_log_data&log_id=' + logId
@@ -291,7 +291,7 @@ document.getElementById('confirmRestoreBtn').addEventListener('click', function(
 
     if (!confirm('آیا از بازگردانی این سرویس به حالت قبل مطمئن هستید؟')) return;
 
-    fetch('ajax_handler.php', {
+    fetch(`${APP_BASE_URL}/ajax_handler.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: 'action=restore_repair&log_id=' + idToRestore

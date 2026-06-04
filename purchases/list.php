@@ -1,10 +1,10 @@
 <?php
-require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/../config.php';
 require_login($pdo);
 
 $suppliers = $pdo->query("SELECT id, name FROM suppliers ORDER BY name")->fetchAll();
 $parts     = $pdo->query("SELECT id, name FROM parts ORDER BY name")->fetchAll();
-require_once __DIR__ . '/header.php';
+require_once __DIR__ . '/../header.php';
 ?>
 <style>
     .purchase-form { background: #fff; border-radius: 22px; padding: 25px; box-shadow: 0 3px 18px rgba(0,0,0,0.05); }
@@ -46,4 +46,3 @@ require_once __DIR__ . '/header.php';
         <option value="<?= $p['id'] ?>"><?= htmlspecialchars($p['name']) ?></option>
     <?php endforeach; ?>
 </select>
-<script src="script.js"></script>

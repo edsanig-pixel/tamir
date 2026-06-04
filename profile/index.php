@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/../config.php';
 require_login($pdo);
 
 $message = '';
@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-require_once __DIR__ . '/header.php';
+require_once __DIR__ . '/../header.php';
 ?>
 
 <!-- HTML همانند قبل (بدون تغییر) -->

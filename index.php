@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/header.php';
 require_login($pdo);
 
 // ================= آمار کلی =================
@@ -55,125 +56,9 @@ AND YEAR(service_date)=?
 ");
 $monthlyRepairs->execute([$currentMonth, $currentYear]);
 $monthlyCount = $monthlyRepairs->fetchColumn();
-
-require_once __DIR__ . '/header.php';
 ?>
 
-<style>
-.dashboard-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-    gap:20px;
-    margin-bottom:25px;
-}
-
-.dashboard-card{
-    background:#fff;
-    border-radius:18px;
-    padding:24px;
-    box-shadow:0 4px 15px rgba(0,0,0,.05);
-    border:1px solid #edf0f5;
-    position:relative;
-    overflow:hidden;
-}
-
-.dashboard-card::before{
-    content:'';
-    position:absolute;
-    top:0;
-    right:0;
-    width:6px;
-    height:100%;
-    background:#1e40af;
-}
-
-.dashboard-icon{
-    font-size:32px;
-    margin-bottom:12px;
-}
-
-.dashboard-title{
-    color:#666;
-    font-size:14px;
-    margin-bottom:10px;
-}
-
-.dashboard-value{
-    font-size:30px;
-    font-weight:800;
-    color:#1e293b;
-}
-
-.dashboard-success::before{
-    background:#16a34a;
-}
-
-.dashboard-danger::before{
-    background:#dc2626;
-}
-
-.dashboard-warning::before{
-    background:#f59e0b;
-}
-
-.dashboard-section{
-    background:#fff;
-    border-radius:18px;
-    padding:25px;
-    margin-bottom:25px;
-    border:1px solid #edf0f5;
-    box-shadow:0 4px 15px rgba(0,0,0,.04);
-}
-
-.dashboard-section h3{
-    margin-bottom:20px;
-    color:#1e3a8a;
-}
-
-.quick-actions{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-    gap:15px;
-}
-
-.quick-btn{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:10px;
-    background:#f8fafc;
-    border:1px solid #dbe2ea;
-    border-radius:14px;
-    padding:18px;
-    text-decoration:none;
-    color:#1e293b;
-    font-weight:700;
-    transition:.2s;
-}
-
-.quick-btn:hover{
-    background:#1e40af;
-    color:#fff;
-    transform:translateY(-2px);
-}
-
-.status-badge{
-    padding:6px 12px;
-    border-radius:30px;
-    font-size:12px;
-    font-weight:700;
-}
-
-.status-paid{
-    background:#dcfce7;
-    color:#166534;
-}
-
-.status-unpaid{
-    background:#fee2e2;
-    color:#991b1b;
-}
-</style>
+<!-- page styles moved to style.css -->
 
 <h2>📊 داشبورد مدیریت تعمیرگاه</h2>
 
@@ -239,11 +124,11 @@ require_once __DIR__ . '/header.php';
     <h3>⚡ دسترسی سریع</h3>
 
     <div class="quick-actions">
-        <a class="quick-btn" href="create.php">➕ ثبت سرویس</a>
-        <a class="quick-btn" href="reports.php">📋 لیست سرویس‌ها</a>
-        <a class="quick-btn" href="customers.php">👥 مشتریان</a>
-        <a class="quick-btn" href="parts.php">⚙️ قطعات</a>
-        <a class="quick-btn" href="customer_profile.php">👥 لیست مشتریان </a>
+        <a class="quick-btn" href="<?= BASE_URL ?>/repairs/create">➕ ثبت سرویس</a>
+        <a class="quick-btn" href="<?= BASE_URL ?>/financial">📋 لیست سرویس‌ها</a>
+        <a class="quick-btn" href="<?= BASE_URL ?>/customers">👥 مشتریان</a>
+        <a class="quick-btn" href="<?= BASE_URL ?>/parts">⚙️ قطعات</a>
+        <a class="quick-btn" href="<?= BASE_URL ?>/customers">👥 لیست مشتریان </a>
     </div>
 </div>
 

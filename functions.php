@@ -40,43 +40,86 @@ function get_jalali_date_str($timestamp) {
     return gregorian_to_jalali($date['year'], $date['mon'], $date['mday'], '/');
 }
 
-// ========== فرمت ریال ==========
+// ================== فرمت ریال ==================
 function format_rial($number) {
     return number_format($number, 0, '.', ',') . ' ریال';
 }
 
-// ========== تولید شماره فاکتور ==========
+// --- تولید شماره فاکتور (جدید) ---
 function generate_invoice_number($pdo) {
+    // دریافت سال شمسی جاری
     $now = time();
     $jalali = gregorian_to_jalali(date('Y', $now), date('m', $now), date('d', $now));
     $year = $jalali[0];
+    
+    // آخرین شماره فاکتور برای همین سال
     $stmt = $pdo->prepare("SELECT MAX(invoice_number) FROM repairs WHERE invoice_number LIKE ?");
     $stmt->execute(["FA-$year-%"]);
     $last = $stmt->fetchColumn();
+    
     if ($last) {
-        $num = (int)substr($last, 7) + 1;
+        $num = (int)substr($last, strrpos($last, '-') + 1) + 1;
     } else {
         $num = 1;
     }
     return "FA-$year-" . str_pad($num, 4, '0', STR_PAD_LEFT);
 }
 
-// ========== شروع سشن (تنها یک بار) ==========
+function jalali_is_leap_year($jy) {
+    $a = ($jy - 474) % 2820 + 474;
+    return ((($a + 38) * 31) % 128) < 31;
+}
+
+function validate_jalali_date($date) {
+    if (!preg_match('/^(\d{4})\/(\d{1,2})\/(\d{1,2})$/', $date, $matches)) {
+        return false;
+    }
+    $jy = (int)$matches[1];
+    $jm = (int)$matches[2];
+    $jd = (int)$matches[3];
+
+    if ($jm < 1 || $jm > 12 || $jd < 1) {
+        return false;
+    }
+    if ($jm <= 6) {
+        $maxDay = 31;
+    } elseif ($jm <= 11) {
+        $maxDay = 30;
+    } else {
+        $maxDay = jalali_is_leap_year($jy) ? 30 : 29;
+    }
+    return $jd <= $maxDay;
+}
+
+function convert_jalali_to_gregorian_date($date) {
+    if (!validate_jalali_date($date)) {
+        return null;
+    }
+    [$jy,$jm,$jd] = explode('/', $date);
+    $g = jalali_to_gregorian((int)$jy, (int)$jm, (int)$jd);
+    return sprintf('%04d-%02d-%02d', $g[0], $g[1], $g[2]);
+}
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// ========== بررسی لاگین (با پاک‌سازی بافر) ==========
+// بررسی لاگین (برای صفحات محافظت‌شده)
 function require_login($pdo) {
     if (!isset($_SESSION['user_id'])) {
-        // اگر خروجی قبلی وجود داشت، آن را پاک کن
-        if (ob_get_level()) {
-            ob_end_clean();
-        }
         header("Location: login.php");
         exit;
     }
-    // به‌روزرسانی اطلاعات کاربر در سشن
+
+    if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity']) > 1800) {
+        session_unset();
+        session_destroy();
+        header("Location: login.php?expired=1");
+        exit;
+    }
+
+    $_SESSION['last_activity'] = time();
+    
     if (!isset($_SESSION['user_full_name'])) {
         $stmt = $pdo->prepare("SELECT id, username, full_name, role FROM users WHERE id = ? AND is_active = 1");
         $stmt->execute([$_SESSION['user_id']]);
@@ -86,16 +129,14 @@ function require_login($pdo) {
             $_SESSION['user_role'] = $user['role'];
             $_SESSION['username'] = $user['username'];
         } else {
-            // کاربر حذف یا غیرفعال شده
             session_destroy();
-            if (ob_get_level()) ob_end_clean();
             header("Location: login.php");
             exit;
         }
     }
 }
 
-// ========== ثبت لاگ فعالیت ==========
+// ثبت لاگ فعالیت
 function log_activity($pdo, $user_id, $action, $entity_type = null, $entity_id = null, $description = null) {
     $stmt = $pdo->prepare("INSERT INTO activity_log (user_id, action, entity_type, entity_id, description) VALUES (?, ?, ?, ?, ?)");
     $stmt->execute([$user_id, $action, $entity_type, $entity_id, $description]);

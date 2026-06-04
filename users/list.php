@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/../config.php';
 require_login($pdo);
 
 // فقط super_admin می‌تواند کاربران را مدیریت کند
@@ -46,7 +46,7 @@ if (isset($_GET['toggle']) && is_numeric($_GET['toggle'])) {
 // دریافت لیست کاربران
 $users = $pdo->query("SELECT * FROM users ORDER BY id")->fetchAll();
 
-require_once __DIR__ . '/header.php';
+require_once __DIR__ . '/../header.php';
 ?>
 
 <h2>👥 مدیریت کاربران</h2>

@@ -9,28 +9,41 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 try {
-    $pdo->beginTransaction();
+    $customerId = filter_input(INPUT_POST, 'customer_id', FILTER_VALIDATE_INT);
+    $deviceTypeId = filter_input(INPUT_POST, 'device_type_id', FILTER_VALIDATE_INT);
+    $serviceTypeId = filter_input(INPUT_POST, 'service_type_id', FILTER_VALIDATE_INT);
+    $technicianId = filter_input(INPUT_POST, 'technician_id', FILTER_VALIDATE_INT);
+    $paymentStatus = $_POST['payment_status'] ?? 'unpaid';
+    $laborCost = (int)str_replace([',', ' '], '', $_POST['labor_cost'] ?? '0');
+    $extraCosts = (int)str_replace([',', ' '], '', $_POST['extra_costs'] ?? '0');
+    $warrantyMonths = $_POST['warranty_months'] !== '' ? (int)$_POST['warranty_months'] : null;
+
+    if (!$customerId || $customerId < 1) {
+        throw new Exception('مشتری انتخاب نشده است.');
+    }
+    if (!$serviceTypeId || $serviceTypeId < 1) {
+        throw new Exception('نوع خدمت انتخاب نشده است.');
+    }
+    if (empty($_POST['service_date']) || !validate_jalali_date($_POST['service_date'])) {
+        throw new Exception('تاریخ سرویس نامعتبر است.');
+    }
+    if (!empty($_POST['next_service_date']) && !validate_jalali_date($_POST['next_service_date'])) {
+        throw new Exception('تاریخ سرویس بعدی نامعتبر است.');
+    }
+    if (!in_array($paymentStatus, ['paid', 'unpaid', 'partial'], true)) {
+        $paymentStatus = 'unpaid';
+    }
+
+    $serviceDate = convert_jalali_to_gregorian_date($_POST['service_date']);
+    $nextServiceDate = !empty($_POST['next_service_date']) ? convert_jalali_to_gregorian_date($_POST['next_service_date']) : null;
+    if ($serviceDate === null) {
+        throw new Exception('تاریخ سرویس نامعتبر است.');
+    }
 
     $invoice = generate_invoice_number($pdo);
-
-    $serviceDate = null;
-    if (!empty($_POST['service_date'])) {
-        $parts = explode('/', $_POST['service_date']);
-        if (count($parts) == 3) {
-            $g = jalali_to_gregorian($parts[0], $parts[1], $parts[2]);
-            $serviceDate = sprintf("%04d-%02d-%02d", $g[0], $g[1], $g[2]);
-        }
-    }
-    $nextServiceDate = null;
-    if (!empty($_POST['next_service_date'])) {
-        $parts = explode('/', $_POST['next_service_date']);
-        if (count($parts) == 3) {
-            $g = jalali_to_gregorian($parts[0], $parts[1], $parts[2]);
-            $nextServiceDate = sprintf("%04d-%02d-%02d", $g[0], $g[1], $g[2]);
-        }
-    }
-
     $userId = $_SESSION['user_id'];
+
+    $pdo->beginTransaction();
 
     $stmt = $pdo->prepare("INSERT INTO repairs 
         (customer_id, device_type_id, device_brand, device_model, device_serial, device_year, device_location,
@@ -39,28 +52,28 @@ try {
          solution_description, technician_notes, warranty_months, created_by, updated_by)
         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
     $stmt->execute([
-        $_POST['customer_id'] ?: null,
-        $_POST['device_type_id'] ?: null,
-        $_POST['device_brand'] ?? '',
-        $_POST['device_model'] ?? '',
-        $_POST['device_serial'] ?? '',
-        $_POST['device_year'] ?? null,
-        $_POST['device_location'] ?? '',
-        $_POST['service_type_id'] ?: null,
-        $_POST['problem_part'] ?? '',
-        $_POST['fault_description'] ?? '',
-        $_POST['technician_id'] ?: null,
+        $customerId,
+        $deviceTypeId,
+        trim($_POST['device_brand'] ?? ''),
+        trim($_POST['device_model'] ?? ''),
+        trim($_POST['device_serial'] ?? ''),
+        $_POST['device_year'] !== '' ? (int)$_POST['device_year'] : null,
+        trim($_POST['device_location'] ?? ''),
+        $serviceTypeId,
+        trim($_POST['problem_part'] ?? ''),
+        trim($_POST['fault_description'] ?? ''),
+        $technicianId ?: null,
         $serviceDate,
         $_POST['service_time'] ?? null,
         $nextServiceDate,
-        $_POST['labor_cost'] ?? 0,
-        $_POST['extra_costs'] ?? 0,
-        $_POST['payment_status'] ?? 'unpaid',
+        $laborCost,
+        $extraCosts,
+        $paymentStatus,
         $invoice,
-        $_POST['final_status'] ?? '',
-        $_POST['solution_description'] ?? '',
-        $_POST['technician_notes'] ?? '',
-        $_POST['warranty_months'] ?? null,
+        trim($_POST['final_status'] ?? ''),
+        trim($_POST['solution_description'] ?? ''),
+        trim($_POST['technician_notes'] ?? ''),
+        $warrantyMonths,
         $userId,
         $userId
     ]);
@@ -73,17 +86,23 @@ try {
             $partStmt = $pdo->prepare("INSERT INTO repair_parts (repair_id, part_id, quantity, unit_price, purchase_price) VALUES (?,?,?,?,?)");
             $updateStock = $pdo->prepare("UPDATE parts SET stock = stock - ? WHERE id = ? AND stock IS NOT NULL");
             foreach ($parts as $part) {
-                if (empty($part['part_id'])) continue;
-                $qty = $part['quantity'] ?? 1;
+                $partId = filter_var($part['part_id'] ?? 0, FILTER_VALIDATE_INT);
+                if (!$partId || $partId < 1) {
+                    continue;
+                }
+                $qty = filter_var($part['quantity'] ?? 1, FILTER_VALIDATE_INT);
+                $qty = $qty && $qty > 0 ? $qty : 1;
+                $unitPrice = filter_var($part['unit_price'] ?? 0, FILTER_VALIDATE_INT);
+                $purchasePrice = filter_var($part['purchase_price'] ?? 0, FILTER_VALIDATE_INT);
                 $partStmt->execute([
                     $repairId,
-                    $part['part_id'],
+                    $partId,
                     $qty,
-                    $part['unit_price'] ?? 0,
-                    $part['purchase_price'] ?? 0
+                    $unitPrice ?: 0,
+                    $purchasePrice ?: 0
                 ]);
                 // کاهش موجودی
-                $updateStock->execute([$qty, $part['part_id']]);
+                $updateStock->execute([$qty, $partId]);
             }
         }
     }

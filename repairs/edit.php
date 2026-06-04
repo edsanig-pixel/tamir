@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/../config.php';
 require_login($pdo);
 
 $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
@@ -68,41 +68,67 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         $pdo->beginTransaction();
 
-        // ذخیره نسخهٔ قبلی در لاگ (با ستون‌های اصلی)
         log_activity($pdo, $_SESSION['user_id'], 'update', 'repair', $id, json_encode($oldData, JSON_UNESCAPED_UNICODE));
 
-        // حذف رکورد فعلی
-        $pdo->prepare("DELETE FROM repairs WHERE id = ?")->execute([$id]);
+        $row['customer_id']     = filter_var($row['customer_id'], FILTER_VALIDATE_INT) ?: null;
+        $row['device_type_id']  = filter_var($row['device_type_id'], FILTER_VALIDATE_INT) ?: null;
+        $row['technician_id']   = filter_var($row['technician_id'], FILTER_VALIDATE_INT) ?: null;
+        $row['labor_cost']      = is_numeric($row['labor_cost']) ? (int)$row['labor_cost'] : 0;
+        $row['extra_costs']     = is_numeric($row['extra_costs']) ? (int)$row['extra_costs'] : 0;
+        $row['warranty_months'] = is_numeric($row['warranty_months']) ? (int)$row['warranty_months'] : null;
+        $row['payment_status']  = in_array($row['payment_status'], ['paid','unpaid','partial'], true) ? $row['payment_status'] : 'unpaid';
 
-        // درج دوباره با همان ID
+        if (!empty($_POST['service_date'])) {
+            $serviceDateString = trim($_POST['service_date']);
+            if (!validate_jalali_date($serviceDateString)) {
+                throw new Exception('تاریخ سرویس نامعتبر است.');
+            }
+            $row['service_date'] = convert_jalali_to_gregorian_date($serviceDateString);
+        } else {
+            $row['service_date'] = null;
+        }
+
+        if (!empty($_POST['next_service_date'])) {
+            $nextServiceDateString = trim($_POST['next_service_date']);
+            if (!validate_jalali_date($nextServiceDateString)) {
+                throw new Exception('تاریخ سرویس بعدی نامعتبر است.');
+            }
+            $row['next_service_date'] = convert_jalali_to_gregorian_date($nextServiceDateString);
+        } else {
+            $row['next_service_date'] = null;
+        }
+
         $columns = array_keys($row);
-        $placeholders = array_map(fn($col) => ":$col", $columns);
-        $sql = "INSERT INTO repairs (`" . implode("`, `", $columns) . "`) VALUES (" . implode(", ", $placeholders) . ")";
-
+        $sets = array_map(fn($col) => "`$col` = :$col", $columns);
+        $sql = "UPDATE repairs SET " . implode(', ', $sets) . " WHERE id = :id";
         $stmt = $pdo->prepare($sql);
         foreach ($row as $col => $value) {
-
-    if ($value === null) {
-        $stmt->bindValue(":$col", null, PDO::PARAM_NULL);
-
-    } elseif (is_int($value)) {
-        $stmt->bindValue(":$col", $value, PDO::PARAM_INT);
-
-    } else {
-        $stmt->bindValue(":$col", $value, PDO::PARAM_STR);
-    }
-}
+            if ($value === null) {
+                $stmt->bindValue(":$col", null, PDO::PARAM_NULL);
+            } elseif (is_int($value)) {
+                $stmt->bindValue(":$col", $value, PDO::PARAM_INT);
+            } else {
+                $stmt->bindValue(":$col", $value, PDO::PARAM_STR);
+            }
+        }
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
 
-        // قطعات
         $pdo->prepare("DELETE FROM repair_parts WHERE repair_id = ?")->execute([$id]);
         if (!empty($_POST['parts'])) {
             $partsData = json_decode($_POST['parts'], true);
             if (is_array($partsData)) {
                 $partStmt = $pdo->prepare("INSERT INTO repair_parts (repair_id, part_id, quantity, unit_price, purchase_price) VALUES (?,?,?,?,?)");
                 foreach ($partsData as $part) {
-                    if (empty($part['part_id'])) continue;
-                    $partStmt->execute([$id, $part['part_id'], $part['quantity'] ?? 1, $part['unit_price'] ?? 0, $part['purchase_price'] ?? 0]);
+                    $partId = filter_var($part['part_id'] ?? 0, FILTER_VALIDATE_INT);
+                    if (!$partId || $partId < 1) {
+                        continue;
+                    }
+                    $qty = filter_var($part['quantity'] ?? 1, FILTER_VALIDATE_INT);
+                    $qty = $qty && $qty > 0 ? $qty : 1;
+                    $unitPrice = filter_var($part['unit_price'] ?? 0, FILTER_VALIDATE_INT);
+                    $purchasePrice = filter_var($part['purchase_price'] ?? 0, FILTER_VALIDATE_INT);
+                    $partStmt->execute([$id, $partId, $qty, $unitPrice ?: 0, $purchasePrice ?: 0]);
                 }
             }
         }
@@ -110,7 +136,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $pdo->commit();
         $message = '<div class="alert alert-success">✅ تغییرات با موفقیت ذخیره شد.</div>';
 
-        // بازخوانی داده‌ها
         $stmt = $pdo->prepare("SELECT * FROM repairs WHERE id = ?");
         $stmt->execute([$id]);
         $row = $stmt->fetch();
@@ -144,7 +169,7 @@ WHERE r.id = ?");
 $display->execute([$id]);
 $display = $display->fetch(PDO::FETCH_ASSOC);
 
-require_once __DIR__ . '/header.php';
+require_once __DIR__ . '/../header.php';
 ?>
 <!-- استایل‌های اختصاصی این صفحه -->
 <style>
@@ -377,7 +402,7 @@ require_once __DIR__ . '/header.php';
 
         <div style="text-align:center; margin-top:25px;">
             <button type="submit" class="btn btn-primary">💾 ذخیره تغییرات</button>
-            <a href="index.php" class="btn btn-secondary">انصراف</a>
+            <a href="<?= BASE_URL ?>/" class="btn btn-secondary">انصراف</a>
         </div>
     </form>
 </div>
@@ -443,8 +468,6 @@ window.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-
-<script src="script.js"></script>
 </main>
 </body>
 </html>

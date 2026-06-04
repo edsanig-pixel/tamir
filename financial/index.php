@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/../config.php';
 require_login($pdo);
 
 $search = trim($_GET['search'] ?? '');
@@ -62,7 +62,7 @@ $stmt = $pdo->prepare("
 $stmt->execute($params);
 $repairs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-require_once __DIR__ . '/header.php';
+require_once __DIR__ . '/../header.php';
 ?>
 
 <style>
@@ -499,7 +499,7 @@ require_once __DIR__ . '/header.php';
         <div class="page-title">📋 لیست سرویس‌ها</div>
     </div>
 
-    <a href="create.php" class="btn primary">
+    <a href="<?= BASE_URL ?>/repairs/create" class="btn primary">
         ➕ ثبت سرویس جدید
     </a>
 
@@ -536,7 +536,7 @@ require_once __DIR__ . '/header.php';
             🔍 جستجو
         </button>
 
-        <a href="reports.php" class="btn secondary">
+        <a href="<?= BASE_URL ?>/financial" class="btn secondary">
             ↺ پاکسازی
         </a>
 

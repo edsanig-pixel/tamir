@@ -1,4 +1,4 @@
-<?php require_once __DIR__.'/header.php';
+<?php require_once __DIR__.'/../header.php';
 require_login($pdo);
 $customers    = $pdo->query("SELECT id, name FROM customers ORDER BY name")->fetchAll();
 $deviceTypes  = $pdo->query("SELECT id, name FROM device_types ORDER BY name")->fetchAll();
@@ -87,5 +87,4 @@ $invoice      = generate_invoice_number($pdo);
 <div id="modal-add-item" class="modal"><div class="modal-content"><span class="modal-close" onclick="closeModal('add-item')">&times;</span><h3 id="add-item-title">افزودن جدید</h3><div id="add-item-fields"></div><div class="modal-actions"><button class="btn primary" id="save-new-item">💾 ثبت</button><button class="btn secondary" onclick="closeModal('add-item')">انصراف</button></div></div></div>
 
 <select id="partsSelectTemplate" style="display:none">...</select>
-<script src="script.js"></script>
 </main></body></html>
