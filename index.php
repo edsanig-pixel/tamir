@@ -1,6 +1,5 @@
 <?php
 require_once __DIR__ . '/config.php';
-require_once __DIR__ . '/header.php';
 require_login($pdo);
 
 // ================= آمار کلی =================
@@ -56,6 +55,8 @@ AND YEAR(service_date)=?
 ");
 $monthlyRepairs->execute([$currentMonth, $currentYear]);
 $monthlyCount = $monthlyRepairs->fetchColumn();
+
+require_once __DIR__ . '/header.php';
 ?>
 
 <style>

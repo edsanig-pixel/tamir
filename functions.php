@@ -72,6 +72,7 @@ if (session_status() === PHP_SESSION_NONE) {
 // بررسی لاگین (برای صفحات محافظت‌شده)
 function require_login($pdo) {
     if (!isset($_SESSION['user_id'])) {
+		if (ob_get_length()) ob_clean();
         header("Location: login.php");
         exit;
     }
