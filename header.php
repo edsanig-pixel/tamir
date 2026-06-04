@@ -2,7 +2,9 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require_once __DIR__ . '/config.php';
+if (!isset($pdo)) {
+    require_once __DIR__ . '/config.php';
+}
 
 $currentPage = basename($_SERVER['PHP_SELF']);
 
