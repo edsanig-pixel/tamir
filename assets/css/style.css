@@ -1,716 +1,496 @@
-/* ===================== فونت ===================== */
+/* ============================================================
+   فایل استایل جامع سیستم مدیریت تعمیرگاه جک پارکینگ
+   شامل: ریست، متغیرها، المان‌های پایه، کامپوننت‌ها، یوتیلیتی‌ها، واکنشگرا و پرینت
+   ============================================================ */
+
+/* -------------------- فونت و تنظیمات پایه -------------------- */
 @font-face {
     font-family: 'Vazir';
-    src: url('fonts/Vazir-Regular.ttf') format('truetype');
+    src: url('../fonts/Vazir-Regular.ttf') format('truetype');
     font-weight: normal;
+    font-style: normal;
 }
 @font-face {
     font-family: 'Vazir';
-    src: url('fonts/Vazir-Bold.ttf') format('truetype');
+    src: url('../fonts/Vazir-Bold.ttf') format('truetype');
     font-weight: bold;
+    font-style: normal;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
     font-family: 'Vazir', Tahoma, sans-serif;
-    background: #f4f7fc;
-    color: #1a1a1a;
-    font-size: 14px;
-    line-height: 1.7;
+    background: #f0f2f5;
+    color: #333;
+    line-height: 1.5;
     direction: rtl;
 }
-.container { max-width: 1300px; margin: 0 auto; padding: 20px; }
 
-/* ================= هدر و منو ================= */
+/* -------------------- متغیرهای CSS -------------------- */
+:root {
+    --primary: #1e3c72;
+    --primary-dark: #0f2a4f;
+    --primary-light: #2a5298;
+    --secondary: #6c757d;
+    --success: #28a745;
+    --danger: #dc3545;
+    --warning: #ffc107;
+    --info: #17a2b8;
+    --light: #f8f9fa;
+    --dark: #343a40;
+    --border: #dee2e6;
+    --shadow: 0 0.5rem 1rem rgba(0,0,0,0.08);
+    --radius: 0.5rem;
+}
+
+/* -------------------- تایپوگرافی -------------------- */
+h1, h2, h3, h4, h5, h6 {
+    margin-bottom: 1rem;
+    font-weight: bold;
+    color: var(--primary);
+}
+a {
+    text-decoration: none;
+    color: var(--primary);
+    transition: 0.2s;
+}
+a:hover {
+    color: var(--primary-dark);
+}
+
+/* -------------------- HEADER و منو -------------------- */
 .main-header {
-    background: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    padding: 15px 30px;
-    margin-bottom: 25px;
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 1rem 1.5rem;
+    margin-bottom: 2rem;
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    border-bottom: 3px solid #1e3c72;
+    align-items: center;
+    flex-wrap: wrap;
 }
 .logo h1 {
     font-size: 1.8rem;
-    color: #1e3c72;
-    font-weight: bold;
+    margin: 0;
 }
-.main-nav ul { list-style: none; display: flex; gap: 8px; }
+.main-nav ul {
+    display: flex;
+    list-style: none;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
 .main-nav ul li a {
     display: block;
-    padding: 10px 22px;
-    border-radius: 6px;
-    background: #f7f9fc;
-    color: #1e3c72;
-    text-decoration: none;
-    font-weight: 600;
-    transition: 0.2s;
-    border: 1px solid #dce1e8;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius);
+    background: #e9ecef;
+    color: var(--primary);
+    font-weight: 500;
 }
 .main-nav ul li a:hover,
 .main-nav ul li a.active {
-    background: #1e3c72;
+    background: var(--primary);
     color: white;
-    border-color: #1e3c72;
+}
+/* منوی آبشاری */
+.menu-item {
+    position: relative;
+}
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    min-width: 200px;
+    box-shadow: var(--shadow);
+    border-radius: var(--radius);
+    list-style: none;
+    padding: 0.5rem 0;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s;
+    z-index: 1000;
+}
+.menu-item:hover .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+}
+.dropdown-menu li a {
+    padding: 0.5rem 1.5rem;
+    background: none;
+    border-radius: 0;
+}
+.dropdown-menu li a:hover {
+    background: #f1f3f5;
 }
 
-/* ================= کارت‌ها و محتوا ================= */
-.card {
-    background: #ffffff;
-    border-radius: 12px;
-    padding: 30px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
-    margin-bottom: 25px;
-    border: 1px solid #eef2f7;
+/* -------------------- کارت‌ها و داشبورد -------------------- */
+.dashboard-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
 }
-h2 {
-    color: #1e3c72;
-    font-size: 1.8rem;
-    margin-bottom: 20px;
-    border-bottom: 2px solid #e0e4ea;
-    padding-bottom: 10px;
+.stat-card {
+    background: white;
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: var(--shadow);
+    transition: transform 0.2s;
 }
-
-/* ================= فرم‌ها ================= */
-fieldset {
-    border: 1px solid #dce1e8;
-    border-radius: 10px;
-    padding: 20px;
-    margin-bottom: 20px;
-    background: #fafbfc;
+.stat-card:hover {
+    transform: translateY(-3px);
 }
-legend {
+.stat-card .stat-value {
+    font-size: 2rem;
     font-weight: bold;
-    font-size: 1.2rem;
-    color: #1e3c72;
+    color: var(--primary);
+}
+.stat-card .stat-label {
+    color: #6c757d;
+}
+
+/* -------------------- جداول -------------------- */
+.table-responsive {
+    overflow-x: auto;
+}
+.table {
+    width: 100%;
     background: white;
-    padding: 0 15px;
-    border-radius: 20px;
-    border: 1px solid #dce1e8;
+    border-collapse: collapse;
+    border-radius: var(--radius);
+    overflow: hidden;
 }
-.form-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    margin-bottom: 15px;
-    align-items: center;
+.table th,
+.table td {
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--border);
+    text-align: right;
 }
-.form-row input,
-.form-row select,
-.form-row textarea,
-input, textarea, select {
-    padding: 12px 15px;
-    border: 1px solid #ccd4dd;
-    border-radius: 8px;
-    font-size: 14px;
-    background: #ffffff;
+.table th {
+    background: #f8f9fa;
+    font-weight: 600;
+}
+.table tbody tr:hover {
+    background: #f8f9fa;
+}
+/* وضعیت‌های خاص */
+.badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 30px;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+.badge-success { background: #d4edda; color: #155724; }
+.badge-danger { background: #f8d7da; color: #721c24; }
+.badge-warning { background: #fff3cd; color: #856404; }
+.badge-info { background: #d1ecf1; color: #0c5460; }
+
+/* -------------------- فرم‌ها -------------------- */
+.form-group {
+    margin-bottom: 1rem;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+.form-control,
+.form-select {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    font-size: 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
     font-family: inherit;
-    transition: 0.2s;
-    flex: 1 1 220px;
 }
-.form-row input:focus,
-.form-row select:focus,
-.form-row textarea:focus,
-input:focus, textarea:focus, select:focus {
-    border-color: #1e3c72;
-    box-shadow: 0 0 0 3px rgba(30,60,114,0.1);
-    outline: none;
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--primary);
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(30,60,114,0.25);
 }
-textarea { min-height: 90px; resize: vertical; }
-
-/* ================= جستجو ================= */
-.search-box {
+textarea.form-control {
+    min-height: 80px;
+    resize: vertical;
+}
+/* ردیف‌های قطعات در فرم سرویس */
+.part-row {
     display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
+    gap: 1rem;
     align-items: center;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
 }
-.search-box input {
+.part-row .form-control {
     flex: 1;
-    max-width: 450px;
-    padding: 12px 15px;
-    border: 1px solid #ccd4dd;
-    border-radius: 8px;
-    background: white;
+}
+.remove-part {
+    background: var(--danger);
+    color: white;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
 }
 
-/* ================= دکمه‌ها ================= */
+/* -------------------- دکمه‌ها -------------------- */
 .btn {
     display: inline-block;
-    padding: 12px 26px;
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 14px;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius);
+    font-weight: 500;
+    text-align: center;
     cursor: pointer;
+    border: 1px solid transparent;
     transition: 0.2s;
-    text-decoration: none;
-    border: none;
-    background: #e0e4ea;
-    color: #1e3c72;
 }
-.btn.primary { background: #1e3c72; color: white; }
-.btn.primary:hover { background: #172d56; }
-.btn.secondary { background: white; border: 1px solid #ccd4dd; color: #1e3c72; }
-.btn.success { background: #2e7d32; color: white; }
-.btn.danger { background: #c0392b; color: white; }
-.btn.warning { background: #f39c12; color: white; }
-.btn.small { padding: 8px 18px; font-size: 13px; }
-.btn:hover { opacity: 0.9; }
+.btn-primary {
+    background: var(--primary);
+    color: white;
+}
+.btn-primary:hover {
+    background: var(--primary-dark);
+}
+.btn-success {
+    background: var(--success);
+    color: white;
+}
+.btn-danger {
+    background: var(--danger);
+    color: white;
+}
+.btn-secondary {
+    background: var(--secondary);
+    color: white;
+}
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+}
+.btn-lg {
+    padding: 0.75rem 1.5rem;
+    font-size: 1.1rem;
+}
 
-/* ================= جداول ================= */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: white;
-    border-radius: 10px;
-    overflow: hidden;
-    border: 1px solid #e0e4ea;
-    font-size: 14px;
-}
-th {
-    background: #f4f6f9;
-    color: #1e3c72;
-    font-weight: 600;
-    padding: 12px 10px;
-    text-align: right;
-    border-bottom: 2px solid #dce1e8;
-}
-td {
-    padding: 10px;
-    border-bottom: 1px solid #eef0f4;
-}
-tr:nth-child(even) td { background: #fafbfc; }
-tr:hover td { background: #eef2ff; }
-
-/* ================= صفحه‌بندی ================= */
-.pagination { margin-top: 25px; display: flex; gap: 6px; justify-content: center; }
-.pagination a, .pagination span {
-    display: inline-block;
-    padding: 8px 16px;
-    border-radius: 6px;
-    background: white;
-    border: 1px solid #ccd4dd;
-    color: #1e3c72;
-    text-decoration: none;
-    font-weight: 600;
-}
-.pagination a.active, .pagination span.active { background: #1e3c72; color: white; }
-
-/* ================= مودال‌ها ================= */
-/* مودال‌های تمام‌صفحه (شیشه‌ای) */
+/* -------------------- مودال‌ها -------------------- */
 .modal {
     display: none;
     position: fixed;
-    z-index: 1000;
-    left: 0; top: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.45);
-    backdrop-filter: blur(6px);
-    justify-content: center;
-    align-items: center;
-}
-
-.modal-content {
-    background: #ffffff;
-    border-radius: 16px;
-    width: 92vw;
-    max-width: 1100px;
-    height: 90vh;
-    max-height: 90vh;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 1050;
     overflow-y: auto;
-    box-shadow: 0 25px 50px rgba(0,0,0,0.25);
-    padding: 35px 40px;
+}
+.modal-dialog {
     position: relative;
-    border: 1px solid #e0e7ef;
+    max-width: 600px;
+    margin: 2rem auto;
 }
-
-.modal-content h3 {
-    font-size: 1.8rem;
-    color: #1e3c72;
-    margin-bottom: 25px;
-    border-bottom: 2px solid #eee;
-    padding-bottom: 12px;
+.modal-fullscreen .modal-dialog {
+    max-width: 95%;
+    width: 95%;
 }
-
+.modal-content {
+    background: white;
+    border-radius: var(--radius);
+    display: flex;
+    flex-direction: column;
+}
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid var(--border);
+}
+.modal-title {
+    margin: 0;
+    font-size: 1.25rem;
+}
 .modal-close {
-    position: absolute;
-    top: 20px;
-    right: 25px;
-    font-size: 2rem;
-    cursor: pointer;
-    color: #888;
     background: none;
     border: none;
-}
-.modal-close:hover { color: #e74c3c; }
-
-/* فیلدهای داخل مودال */
-.modal-content input,
-.modal-content select,
-.modal-content textarea {
-    padding: 14px 16px;
-    font-size: 15px;
-    border: 1px solid #ccd4dd;
-    border-radius: 8px;
-    background: #fff;
-    font-family: inherit;
-    width: 100%;
-    margin-bottom: 12px;
-}
-
-/* دکمه‌های داخل مودال */
-.modal-content .btn {
-    margin-top: 10px;
-}
-
-/* ================= کارت‌های ثبت سرویس ================= */
-.service-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
-    margin: 20px 0;
-}
-.s-card {
-    background: white;
-    border-radius: 12px;
-    padding: 22px 15px;
-    text-align: center;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    font-size: 1.5rem;
     cursor: pointer;
-    border: 1px solid #e0e4ea;
-    transition: 0.2s;
-    font-weight: 600;
-    color: #1e3c72;
 }
-.s-card:hover { border-color: #1e3c72; background: #f4f6ff; }
-.s-card small { display: block; font-weight: normal; color: #777; margin-top: 6px; }
-
-/* ================= خلاصه قطعات ================= */
-.parts-summary {
-    font-weight: bold;
-    margin: 10px 0;
+.modal-body {
+    padding: 1rem;
 }
-
-/* ================= کارت‌های گزارش ================= */
-.stat-card {
-    background: white;
-    border-radius: 12px;
-    padding: 25px;
-    text-align: center;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    border: 1px solid #e9ecf1;
-}
-.stat-icon { font-size: 2.2rem; }
-.stat-value { font-size: 2rem; font-weight: bold; color: #1e3c72; }
-.stat-label { color: #666; }
-
-/* ================= نمودار ================= */
-.bar-chart { margin-top: 20px; }
-.bar-item { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
-.bar-label { min-width: 110px; font-weight: bold; }
-.bar-wrapper { flex: 1; background: #eef0f4; border-radius: 20px; height: 28px; overflow: hidden; }
-.bar-fill {
-    background: #1e3c72;
-    height: 100%;
-    border-radius: 20px;
+.modal-footer {
+    padding: 1rem;
+    border-top: 1px solid var(--border);
     display: flex;
-    align-items: center;
     justify-content: flex-end;
-    padding-right: 10px;
-    color: white;
-    font-size: 13px;
+    gap: 0.5rem;
 }
 
-/* تقویم */
-.datepicker-wrapper { position: relative; display: inline-block; }
-.datepicker-input { cursor: pointer; background: #fff url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="%231e3c72"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V10h14v9zm0-11H5V5h14v3z"/></svg>') no-repeat left 10px center; padding-left: 35px; }
-.datepicker-dropdown {
-    display: none; position: absolute; background: white; border: 1px solid #ddd;
-    border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.15); z-index: 2000;
-    padding: 15px; width: 280px; right: 0; top: 45px;
+/* -------------------- جستجو و فیلتر -------------------- */
+.search-box {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
 }
-.dp-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
-.dp-header button { background: none; border: none; cursor: pointer; font-size: 1.2rem; color: #1e3c72; }
-.dp-year-month { font-weight: bold; color: #1e3c72; }
-.dp-weekdays, .dp-days { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; }
-.dp-weekdays span { font-weight: bold; color: #666; }
-.dp-days span { padding: 8px; cursor: pointer; border-radius: 6px; }
-.dp-days span:hover { background: #f0f2f5; }
-.dp-days span.active { background: #1e3c72; color: white; }
+.search-input {
+    flex: 1;
+}
+.filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: var(--radius);
+}
 
-/* تب‌ها */
+/* -------------------- تب‌ها -------------------- */
 .tabs {
     display: flex;
-    border-bottom: 2px solid #ccd4dd;
-    margin-bottom: 20px;
-    gap: 5px;
+    border-bottom: 2px solid var(--border);
+    margin-bottom: 1rem;
 }
-.tab {
-    background: #f4f6f9;
-    border: 1px solid #ccd4dd;
-    border-bottom: none;
-    padding: 12px 20px;
-    border-radius: 8px 8px 0 0;
+.tab-btn {
+    padding: 0.5rem 1rem;
+    background: none;
+    border: none;
     cursor: pointer;
-    font-weight: 600;
-    color: #555;
-    transition: 0.2s;
-    font-family: inherit;
+    font-weight: 500;
 }
-.tab.active {
-    background: white;
-    color: #1e3c72;
-    border-bottom: 2px solid white;
-    margin-bottom: -2px;
+.tab-btn.active {
+    border-bottom: 2px solid var(--primary);
+    color: var(--primary);
 }
 .tab-content {
     display: none;
-    animation: fadeIn 0.3s ease;
 }
 .tab-content.active {
     display: block;
 }
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(5px); }
-    to { opacity: 1; transform: translateY(0); }
-}
 
-/* منوی آبشاری */
-.main-nav { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
-.menu-item { position: relative; padding-bottom: 10px; }  /* ← فضای ایمن زیر دکمه */
-.menu-link {
-    display: flex; align-items: center; gap: 6px;
-    padding: 10px 20px; border-radius: 40px;
-    background: #f8fafc; color: #1e3c72;
-    text-decoration: none; font-weight: 600; transition: 0.2s;
-    border: 1px solid #dce1e8; white-space: nowrap;
-}
-.menu-link:hover, .menu-link.active {
-    background: #1e3c72; color: white; border-color: #1e3c72;
-}
-.submenu {
-    display: none; position: absolute; top: 100%; right: 0;
-    background: white; border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.12);
-    min-width: 220px; z-index: 1000; margin-top: 0;  /* ← حذف فاصله */
-    border: 1px solid #e0e7ef; padding: 8px 0;
-}
-.menu-item:hover .submenu { display: block; animation: fadeSlide 0.2s ease; }
-.submenu a {
-    display: flex; align-items: center; gap: 8px; padding: 12px 20px;
-    text-decoration: none; color: #334155; transition: 0.2s;
-}
-.submenu a:hover { background: #f4f6f9; color: #1e3c72; }
-
-@keyframes fadeSlide {
-    from { opacity: 0; transform: translateY(-8px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-
-/* ================= واکنش‌گرایی ================= */
-@media (max-width: 768px) {
-    .main-header { flex-direction: column; gap: 15px; }
-    .form-row input, .form-row select, .form-row textarea { flex: 1 1 100%; }
-}
-
-/* ================= صفحه‌ها و کارت‌های عمومی ================= */
-.page-header {
+/* -------------------- صفحه‌بندی -------------------- */
+.pagination {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 25px;
+    justify-content: center;
+    gap: 0.5rem;
+    list-style: none;
+    margin-top: 1.5rem;
 }
-.page-title {
-    font-size: 28px;
-    font-weight: 800;
-    color: #1e3a8a;
+.page-link {
+    display: block;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--primary);
 }
-.search-card,
-.purchase-form,
-.profile-card,
-.edit-card,
-.customer-card,
-.supplier-card {
-    background: #fff;
-    border-radius: 22px;
-    padding: 25px;
-    box-shadow: 0 3px 18px rgba(0,0,0,0.05);
-    border: 1px solid #e5e7eb;
-    margin-bottom: 25px;
+.page-item.active .page-link {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
 }
-.customer-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 20px;
+.page-item.disabled .page-link {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
-.customer-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+
+/* -------------------- نمودارها (ساده برای reports) -------------------- */
+.bar-chart {
+    margin: 1rem 0;
 }
-.card-actions {
-    position: absolute;
-    top: 15px;
-    left: 15px;
-    display: flex;
-    gap: 6px;
+.bar-item {
+    margin-bottom: 0.75rem;
 }
-.card-actions button {
-    background: #f1f5f9;
-    border: none;
-    border-radius: 8px;
-    padding: 6px 12px;
-    cursor: pointer;
-    font-family: inherit;
-    transition: 0.2s;
-}
-.card-actions button:hover { background: #e2e8f0; }
-.badge-type {
+.bar-label {
     display: inline-block;
-    padding: 4px 12px;
+    width: 100px;
+    font-weight: 500;
+}
+.bar-wrapper {
+    display: inline-block;
+    width: calc(100% - 110px);
+    background: #e9ecef;
     border-radius: 20px;
-    font-size: 12px;
-    font-weight: 700;
-    margin-right: 8px;
-}
-.badge-personal { background: #dbeafe; color: #1e40af; }
-.badge-company { background: #fef3c7; color: #92400e; }
-.info-row,
-.info-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    color: #475569;
-}
-.stats-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    margin-top: 20px;
-}
-.stat-item {
-    background: #f8fafc;
-    border-radius: 14px;
-    padding: 15px 20px;
-    text-align: center;
-    flex: 1;
-    min-width: 120px;
-    border: 1px solid #e2e8f0;
-}
-.stat-item .stat-number {
-    font-size: 24px;
-    font-weight: 800;
-    color: #1e3a8a;
-}
-.stat-item .stat-label {
-    font-size: 13px;
-    color: #64748b;
-    margin-top: 4px;
-}
-.actions-bar {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-top: 15px;
-}
-.actions-bar.justify-start { justify-content: flex-start; }
-.card-link {
-    color: #1e3a8a;
-    font-weight: 700;
-    text-decoration: none;
-}
-.card-link:hover { text-decoration: underline; }
-.purchase-form .form-row { margin-bottom: 15px; }
-.dashboard-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit,minmax(240px,1fr));
-    gap: 20px;
-    margin-bottom: 25px;
-}
-.dashboard-card {
-    background: #fff;
-    border-radius: 18px;
-    padding: 24px;
-    box-shadow: 0 4px 15px rgba(0,0,0,.05);
-    border: 1px solid #edf0f5;
-    position: relative;
     overflow: hidden;
 }
-.dashboard-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 6px;
-    height: 100%;
-    background: #1e40af;
-}
-.dashboard-icon {
-    font-size: 32px;
-    margin-bottom: 12px;
-}
-.dashboard-title {
-    color: #666;
-    font-size: 14px;
-    margin-bottom: 10px;
-}
-.dashboard-value {
-    font-size: 30px;
-    font-weight: 800;
-    color: #1e293b;
-}
-.dashboard-success::before { background: #16a34a; }
-.dashboard-danger::before { background: #dc2626; }
-.dashboard-warning::before { background: #f59e0b; }
-.dashboard-section {
-    background: #fff;
-    border-radius: 18px;
-    padding: 25px;
-    margin-bottom: 25px;
-    border: 1px solid #edf0f5;
-    box-shadow: 0 4px 15px rgba(0,0,0,.04);
-}
-.dashboard-section h3 { margin-bottom: 20px; color: #1e3a8a; }
-.quick-actions {
-    display: grid;
-    grid-template-columns: repeat(auto-fit,minmax(180px,1fr));
-    gap: 15px;
-}
-.quick-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    background: #f8fafc;
-    border: 1px solid #dbe2ea;
-    border-radius: 14px;
-    padding: 18px;
-    text-decoration: none;
-    color: #1e293b;
-    font-weight: 700;
-    transition: .2s;
-}
-.quick-btn:hover { background: #1e40af; color: #fff; transform: translateY(-2px); }
-.status-badge { padding: 6px 12px; border-radius: 30px; font-size: 12px; font-weight: 700; }
-.status-paid { background: #dcfce7; color: #166534; }
-.status-unpaid { background: #fee2e2; color: #991b1b; }
-.status-partial { background: #fef3c7; color: #92400e; }
-.login-container {
-    max-width: 420px;
-    margin: 100px auto;
-    background: #fff;
-    border-radius: 20px;
-    padding: 40px 30px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.08);
-    text-align: center;
-}
-.login-container h1 { color: #1e3c72; margin-bottom: 10px; }
-.login-container p { color: #666; margin-bottom: 25px; font-size: 0.9rem; }
-.login-container input { width: 100%; padding: 14px 16px; margin-bottom: 15px; border: 1px solid #ccd4dd; border-radius: 12px; font-family: inherit; font-size: 1rem; background: #fafbfc; }
-.login-container input:focus { border-color: #1e3c72; outline: none; box-shadow: 0 0 0 3px rgba(30,60,114,0.1); }
-.login-btn { width: 100%; background: #1e3c72; color: #fff; border: none; padding: 14px; border-radius: 40px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: 0.2s; }
-.login-btn:hover { background: #172d56; }
-.error { background: #fee2e2; color: #991b1b; padding: 12px; border-radius: 10px; margin-bottom: 15px; }
-.items-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 15px 0;
-}
-.items-table th {
-    background: #f1f5f9;
-    padding: 12px;
+.bar-fill {
+    background: var(--primary);
+    color: white;
+    padding: 0.2rem 0.5rem;
     text-align: right;
-}
-.items-table td {
-    padding: 10px;
-    border-bottom: 1px solid #eee;
-}
-.print-container { max-width: 1000px; margin: auto; }
-.header { text-align: center; border-bottom: 2px solid #1e3a8a; padding-bottom: 15px; margin-bottom: 20px; }
-.header h1 { color: #1e3a8a; margin: 0; }
-.info-table { width: 100%; margin-bottom: 20px; border-collapse: collapse; }
-.info-table td { padding: 8px 10px; border: 1px solid #ccc; }
-.info-table .label { background: #f1f5f9; font-weight: bold; width: 30%; }
-.total-row { font-weight: bold; background: #f1f5f9; }
-.no-print { text-align: center; margin-top: 20px; }
-.btn-outline { background: #fff; border: 1px solid #1e3c72; color: #1e3c72; }
-.btn-outline:hover { background: #f0f2f5; }
-.btn.small { padding: 8px 18px; font-size: 13px; }
-.btn-action {
-    flex: 1;
-    min-width: 100px;
-    text-align: center;
-    padding: 12px 14px;
-    border-radius: 12px;
-    text-decoration: none;
-    font-weight: 700;
-    transition: .2s;
-    border: none;
-    cursor: pointer;
-    font-family: inherit;
-}
-.btn-view { background: #dbeafe; color: #1d4ed8; }
-.btn-edit { background: #fef3c7; color: #92400e; }
-.btn-delete { background: #fee2e2; color: #b91c1c; }
-.btn-action:hover { opacity: .9; transform: translateY(-1px); }
-.service-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
-.service-card {
-    background: #fff;
     border-radius: 20px;
-    padding: 24px;
-    box-shadow: 0 6px 18px rgba(0,0,0,.05);
-    border: 1px solid #edf0f5;
-    transition: .2s;
+    font-size: 0.8rem;
 }
-.service-card:hover { transform: translateY(-3px); }
-.service-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 18px; gap: 10px; }
-.invoice-number { font-size: 18px; font-weight: 800; color: #1e3a8a; }
-.service-date { color: #6b7280; font-size: 13px; margin-top: 5px; }
-.payment-badge { padding: 8px 14px; border-radius: 30px; font-size: 12px; font-weight: 700; white-space: nowrap; }
-.badge-paid { background: #dcfce7; color: #166534; }
-.badge-unpaid { background: #fee2e2; color: #991b1b; }
-.badge-partial { background: #fef3c7; color: #92400e; }
-.info-list { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px; }
-.info-box { background: #f8fafc; border-radius: 14px; padding: 12px; border: 1px solid #e2e8f0; }
-.info-label { font-size: 12px; color: #64748b; margin-bottom: 5px; }
-.info-value { font-weight: 700; color: #0f172a; line-height: 1.8; word-break: break-word; }
-.amounts { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-.amount-card { border-radius: 14px; padding: 14px; color: #fff; }
-.amount-title { font-size: 12px; opacity: .9; margin-bottom: 8px; }
-.amount-value { font-size: 17px; font-weight: 800; }
-.bg-blue { background: linear-gradient(135deg,#2563eb,#1d4ed8); }
-.bg-green { background: linear-gradient(135deg,#059669,#047857); }
-.total-box { background: #0f172a; color: #fff; border-radius: 16px; padding: 16px; margin-bottom: 20px; }
-.total-label { font-size: 13px; opacity: .8; margin-bottom: 8px; }
-.total-value { font-size: 22px; font-weight: 900; }
-.empty-box { background: #fff; border-radius: 20px; padding: 60px 20px; text-align: center; border: 1px dashed #cbd5e1; color: #64748b; font-size: 18px; }
-.details-modal, .restore-modal { position: fixed; inset: 0; background: rgba(15,23,42,.75); backdrop-filter: blur(6px); z-index: 99999; display: none; align-items: center; justify-content: center; padding: 20px; }
-.details-modal.active, .restore-modal.active { display: flex; animation: fadeIn .2s ease; }
-.details-box, .restore-modal-content { width: 100%; max-width: 1000px; max-height: 92vh; overflow-y: auto; background: #fff; border-radius: 28px; padding: 28px; position: relative; box-shadow: 0 30px 80px rgba(0,0,0,.35); }
-.details-close, .restore-modal-close { position: absolute; top: 18px; left: 18px; width: 42px; height: 42px; border: none; border-radius: 50%; background: #fee2e2; color: #b91c1c; cursor: pointer; font-size: 18px; font-weight: bold; }
-.details-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; gap: 15px; flex-wrap: wrap; }
-.details-title { font-size: 28px; font-weight: 900; color: #1e3a8a; }
-.details-status { padding: 10px 18px; border-radius: 40px; font-size: 13px; font-weight: 800; }
-.details-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-bottom: 20px; }
-.details-item { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 18px; padding: 16px; }
-.details-label { font-size: 12px; color: #64748b; margin-bottom: 8px; }
-.details-value { font-size: 15px; font-weight: 700; color: #0f172a; line-height: 1.9; word-break: break-word; }
-.details-section { margin-top: 20px; }
-.details-section-title { font-size: 18px; font-weight: 800; color: #1e3a8a; margin-bottom: 12px; }
-.details-text { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 18px; padding: 18px; line-height: 2.1; font-size: 14px; }
-.details-total { margin-top: 25px; background: linear-gradient(135deg,#1e3a8a,#1d4ed8); color: #fff; border-radius: 22px; padding: 25px; }
-.details-total-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 15px; }
-.total-mini { background: rgba(255,255,255,.1); border-radius: 16px; padding: 14px; }
-.total-mini-title { font-size: 12px; opacity: .8; margin-bottom: 8px; }
-.total-mini-value { font-size: 16px; font-weight: 800; }
-.final-grand-total { margin-top: 20px; text-align: left; font-size: 30px; font-weight: 900; }
-.modal-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; margin-top: 20px; }
-.mt-15 { margin-top: 15px !important; }
-@media(max-width:768px) {
-    .details-grid { grid-template-columns: 1fr; }
-    .details-total-grid { grid-template-columns: 1fr 1fr; }
-    .page-header, .customer-grid, .service-grid, .stats-row, .actions-bar { flex-direction: column; align-items: stretch; }
+
+/* -------------------- یوتیلیتی‌ها -------------------- */
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.text-left { text-align: left; }
+.mt-1 { margin-top: 0.25rem; }
+.mt-2 { margin-top: 0.5rem; }
+.mt-3 { margin-top: 1rem; }
+.mb-1 { margin-bottom: 0.25rem; }
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-3 { margin-bottom: 1rem; }
+.p-2 { padding: 0.5rem; }
+.p-3 { padding: 1rem; }
+.d-flex { display: flex; }
+.justify-between { justify-content: space-between; }
+.align-center { align-items: center; }
+.gap-2 { gap: 0.5rem; }
+.w-100 { width: 100%; }
+.bg-white { background: white; }
+.bg-light { background: #f8f9fa; }
+
+/* -------------------- واکنشگرایی -------------------- */
+@media (max-width: 768px) {
+    .main-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    .main-nav ul {
+        justify-content: center;
+    }
+    .dashboard-stats {
+        grid-template-columns: 1fr;
+    }
+    .part-row {
+        flex-direction: column;
+    }
+    .modal-dialog {
+        margin: 1rem;
+    }
+}
+
+/* -------------------- استایل چاپ (فاکتور) -------------------- */
+@media print {
+    .main-header, .main-nav, .btn, .no-print, .search-box, .filter-bar, .pagination {
+        display: none !important;
+    }
+    body {
+        background: white;
+        padding: 0;
+        margin: 0;
+    }
+    .container {
+        max-width: 100%;
+        padding: 0;
+    }
+    .table {
+        border: 1px solid #ccc;
+    }
+    .table th, .table td {
+        border: 1px solid #ccc;
+    }
 }

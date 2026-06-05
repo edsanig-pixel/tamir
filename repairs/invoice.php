@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/includes/config.php';
+require_once __DIR__ . '/../includes/config.php';
 require_login($pdo);
 
 $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
@@ -72,7 +72,7 @@ $grandTotal = $laborCost + $extraCosts + $totalParts;
 <title>
 فاکتور <?= htmlspecialchars($invoice['invoice_number']) ?>
 </title>
-<link rel="stylesheet" href="invoice.css">
+<link rel="stylesheet" href="<?= BASE_URL ?>assets/css/invoice.css">
 </head>
 
 <body>

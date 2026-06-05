@@ -11,8 +11,7 @@ try {
     die("❌ خطا در اتصال به دیتابیس: " . $e->getMessage());
 }
 
-define('BASE_PATH', dirname(__DIR__));  // مسیر ریشه پروژه (tamir)
-define('BASE_URL', 'http://localhost/tamir/');  // آدرس پروژه در مرورگر
+define('BASE_URL', '/tamir');
 
-require_once __DIR__ . '/../functions.php';
+require_once __DIR__ . '/functions.php';
 ?>
