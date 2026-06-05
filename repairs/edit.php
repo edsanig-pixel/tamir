@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../config.php';
+require_once __DIR__ . '../includes/config.php';
 require_login($pdo);
 
 $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
@@ -169,7 +169,7 @@ WHERE r.id = ?");
 $display->execute([$id]);
 $display = $display->fetch(PDO::FETCH_ASSOC);
 
-require_once __DIR__ . '/../header.php';
+require_once __DIR__ . '../includes/header.php';
 ?>
 <!-- استایل‌های اختصاصی این صفحه -->
 <style>

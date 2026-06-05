@@ -1,9 +1,9 @@
 <?php
-require_once __DIR__ . '/../config.php';
+require_once __DIR__ . '../includes/config.php';
 require_login($pdo);
 
 $suppliers = $pdo->query("SELECT * FROM suppliers ORDER BY name")->fetchAll();
-require_once __DIR__ . '/../header.php';
+require_once __DIR__ . '../includes/header.php';
 ?>
 <style>
     .supplier-card { background: #fff; border-radius: 18px; padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); border: 1px solid #e5e7eb; margin-bottom: 15px; position: relative; }

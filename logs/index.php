@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../config.php';
+require_once __DIR__ . '../includes/config.php';
 require_login($pdo);
 
 if (!in_array($_SESSION['user_role'] ?? '', ['admin', 'super_admin'])) {
@@ -81,7 +81,7 @@ function formatDescription($description, $entityType, $action) {
     return mb_strlen($description) > 80 ? mb_substr($description, 0, 80) . '...' : $description;
 }
 
-require_once __DIR__ . '/../header.php';
+require_once __DIR__ . '../includes/header.php';
 ?>
 
 <style>

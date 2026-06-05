@@ -11,7 +11,7 @@ try {
     die("❌ خطا در اتصال به دیتابیس: " . $e->getMessage());
 }
 
-define('BASE_URL', '/tamir');
+define('BASE_URL', '/tamir/');
 
 require_once __DIR__ . '/functions.php';
 ?>

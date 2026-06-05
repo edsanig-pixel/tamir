@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../config.php';
+require_once __DIR__ . '../includes/config.php';
 require_login($pdo);
 
 // حذف مشتری
@@ -35,7 +35,7 @@ $stmt = $pdo->prepare("
 $stmt->execute($params);
 $customers = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-require_once __DIR__ . '/../header.php';
+require_once __DIR__ . '../includes/header.php';
 ?>
 
 <div class="page-header">

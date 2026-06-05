@@ -1,4 +1,4 @@
-<?php require_once __DIR__.'/../header.php';
+<?php require_once __DIR__.'../includes/header.php';
 require_login($pdo);
 $customers    = $pdo->query("SELECT id, name FROM customers ORDER BY name")->fetchAll();
 $deviceTypes  = $pdo->query("SELECT id, name FROM device_types ORDER BY name")->fetchAll();
