@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '../includes/config.php';
+require_once __DIR__ . '/../includes/config.php';
 require_login($pdo);
 
 $search = trim($_GET['search'] ?? '');
@@ -62,7 +62,7 @@ $stmt = $pdo->prepare("
 $stmt->execute($params);
 $repairs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-require_once __DIR__ . '../includes/header.php';
+require_once __DIR__ . '/../includes/header.php';
 ?>
 
 <style>

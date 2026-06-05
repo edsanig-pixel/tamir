@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '../includes/config.php';
+require_once __DIR__ . '/../includes/config.php';
 require_login($pdo);
 
 $transactions = $pdo->query("
@@ -12,7 +12,7 @@ $transactions = $pdo->query("
     LIMIT 50
 ")->fetchAll();
 
-require_once __DIR__ . '../includes/header.php';
+require_once __DIR__ . '/../includes/header.php';
 ?>
 <h2>💰 گزارش دریافتی‌ها و پرداختی‌ها</h2>
 <table>

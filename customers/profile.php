@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '../includes/config.php';
+require_once __DIR__ . '/../includes/config.php';
 require_login($pdo);
 
 $customerId = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
@@ -55,7 +55,7 @@ $historyStmt->bindValue(3, $offset, PDO::PARAM_INT);
 $historyStmt->execute();
 $repairs = $historyStmt->fetchAll(PDO::FETCH_ASSOC);
 
-require_once __DIR__ . '../includes/header.php';
+require_once __DIR__ . '/../includes/header.php';
 ?>
 
 <h2 class="page-title">

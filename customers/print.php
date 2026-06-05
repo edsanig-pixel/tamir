@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '../includes/config.php';
+require_once __DIR__ . '/../includes/config.php';
 require_login($pdo);
 
 $customerId = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
