@@ -1,7 +1,10 @@
 <?php
-require_once __DIR__ . '/config.php';
-require_once __DIR__ . '/header.php';
-require_login($pdo);
+require_once __DIR__ . '/includes/config.php';
+
+if (!isset($_SESSION['user_id'])) {
+    header('Location: login.php');
+    exit;
+}
 
 // ================= آمار کلی =================
 $totalRepairs = $pdo->query("SELECT COUNT(*) FROM repairs")->fetchColumn();
@@ -56,6 +59,8 @@ AND YEAR(service_date)=?
 ");
 $monthlyRepairs->execute([$currentMonth, $currentYear]);
 $monthlyCount = $monthlyRepairs->fetchColumn();
+
+include __DIR__ . '/includes/header.php';
 ?>
 
 <!-- page styles moved to style.css -->
@@ -224,6 +229,4 @@ if (count($lowStockParts) > 0):
     </table>
 </div>
 <?php endif; ?>
-</main>
-</body>
-</html>
+<?php include __DIR__ . '/includes/footer.php'; ?>

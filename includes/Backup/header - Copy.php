@@ -65,9 +65,9 @@ $userEmail = $_SESSION['user_email'] ?? '';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>سیستم مدیریت سرویس جک پارکینگ</title>
-    <link rel="stylesheet" href="<?= BASE_URL ?>/style.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css">
     <script>window.APP_BASE_URL = '<?= BASE_URL ?>';</script>
-    <script src="<?= BASE_URL ?>/script.js" defer></script>
+    <script src="<?= BASE_URL ?>assets/js/script.js" defer></script>
 </head>
 <body>
 <div class="container">
